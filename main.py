@@ -13,6 +13,9 @@ from tqdm import trange
 
 from agent import Agent
 from env import Env
+from procgen_f import *
+from model import DQN
+from impala_net import ImpalaModel
 from memory import ReplayMemory
 from test import test
 
@@ -22,7 +25,10 @@ parser = argparse.ArgumentParser(description='Rainbow')
 parser.add_argument('--id', type=str, default='default', help='Experiment ID')
 parser.add_argument('--seed', type=int, default=123, help='Random seed')
 parser.add_argument('--disable-cuda', action='store_true', help='Disable CUDA')
-parser.add_argument('--game', type=str, default='space_invaders', choices=atari_py.list_games(), help='ATARI game')
+
+# Add parser option to choose between atari or procgen
+parser.add_argument('--game', type=str, default='pong', help='Game to play')
+
 parser.add_argument('--T-max', type=int, default=int(50e6), metavar='STEPS', help='Number of training steps (4x number of frames)')
 parser.add_argument('--max-episode-length', type=int, default=int(108e3), metavar='LENGTH', help='Max episode length in game frames (0 to disable)')
 parser.add_argument('--history-length', type=int, default=4, metavar='T', help='Number of consecutive states processed')
@@ -101,12 +107,18 @@ def save_memory(memory, memory_path, disable_bzip):
 
 
 # Environment
-env = Env(args)
+if is_procgen(args.game):
+  env = ProcEnv(args.game, args.seed)
+  Net = ImpalaModel
+else:
+  env = Env(args)
+  Net = DQN
+
 env.train()
 action_space = env.action_space()
 
 # Agent
-dqn = Agent(args, env)
+dqn = Agent(args, env, Net=Net)
 
 # If a model is provided, and evaluate is false, presumably we want to resume, so try to load memory
 if args.model is not None and not args.evaluate:
