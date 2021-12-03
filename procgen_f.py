@@ -82,6 +82,7 @@ class ProcEnv(Env):
         self.env = None
         self.reset()
         self.training = True  # Consistent with model training mode
+        self.frames = 0
 
     def reset(self, seed=None):
         if seed is not None: self.seed = seed
@@ -93,6 +94,8 @@ class ProcEnv(Env):
         obs, reward, done, info = self.env.step(action)
         # obs to torch tensor
         # obs = torch.from_numpy(obs)
+        self.frames += 1
+        # print(self.frames)
         return obs.to(self.device), reward, done
 
     def render(self, mode='human'):
