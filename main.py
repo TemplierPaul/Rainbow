@@ -27,7 +27,7 @@ parser.add_argument('--seed', type=int, default=123, help='Random seed')
 parser.add_argument('--disable-cuda', action='store_true', help='Disable CUDA')
 
 # Add parser option to choose between atari or procgen
-parser.add_argument('--game', type=str, default='pong', help='Game to play')
+parser.add_argument('--env', type=str, default='pong', help='Game to play')
 
 parser.add_argument('--T-max', type=int, default=int(50e6), metavar='STEPS', help='Number of training steps (4x number of frames)')
 parser.add_argument('--max-episode-length', type=int, default=int(108e3), metavar='LENGTH', help='Max episode length in game frames (0 to disable)')
@@ -63,8 +63,14 @@ parser.add_argument('--checkpoint-interval', default=0, help='How often to check
 parser.add_argument('--memory', help='Path to save/load the memory from')
 parser.add_argument('--disable-bzip-memory', action='store_true', help='Don\'t zip the memory file. Not recommended (zipping is a bit slower and much, much smaller)')
 
+parser.add_argument('--wandb', type=str, default='', help='Wandb project name')
+
 # Setup
 args = parser.parse_args()
+
+if args.wandb != '':
+  import wandb
+  wandb.init(project=args.wandb, config=args.__dict__)
 
 print(' ' * 26 + 'Options')
 for k, v in vars(args).items():
@@ -107,8 +113,8 @@ def save_memory(memory, memory_path, disable_bzip):
 
 
 # Environment
-if is_procgen(args.game):
-  env = ProcEnv(args.game, args.seed)
+if is_procgen(args.env):
+  env = ProcEnv(args)
   Net = ImpalaModel
 else:
   env = Env(args)

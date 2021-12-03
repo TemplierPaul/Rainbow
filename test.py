@@ -7,11 +7,18 @@ from plotly.graph_objs.scatter import Line
 import torch
 
 from env import Env
+from procgen_f import *
+import wandb
 
 
 # Test DQN
 def test(args, T, dqn, val_mem, metrics, results_dir, evaluate=False):
-  env = Env(args)
+  # Environment
+  if is_procgen(args.env):
+    env = ProcEnv(args)
+  else:
+    env = Env(args)
+ 
   env.eval()
   metrics['steps'].append(T)
   T_rewards, T_Qs = [], []
@@ -39,6 +46,10 @@ def test(args, T, dqn, val_mem, metrics, results_dir, evaluate=False):
     T_Qs.append(dqn.evaluate_q(state))
 
   avg_reward, avg_Q = sum(T_rewards) / len(T_rewards), sum(T_Qs) / len(T_Qs)
+
+  # Log metrics to wandb
+  wandb.log({'avg_reward': avg_reward, 'avg_Q': avg_Q}, step=T)
+
   if not evaluate:
     # Save model parameters if improved
     if avg_reward > metrics['best_avg_reward']:

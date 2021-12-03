@@ -73,10 +73,11 @@ def make_procgen_env(env_id, seed, render=False):
     return env
 
 class ProcEnv(Env):
-    def __init__(self, env_id, seed, render=False):
+    def __init__(self, args, render=False):
         # super().__init__()
-        self.env_id = env_id
-        self.seed = seed
+        self.device = args.device
+        self.env_id = args.env
+        self.seed = args.seed
         self.render = render
         self.env = None
         self.reset()
@@ -86,13 +87,13 @@ class ProcEnv(Env):
         if seed is not None: self.seed = seed
         self.env = make_procgen_env(self.env_id, self.seed, self.render)
         obs = self.env.reset()
-        return obs
+        return obs.to(self.device)
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
         # obs to torch tensor
         # obs = torch.from_numpy(obs)
-        return obs, reward, done
+        return obs.to(self.device), reward, done
 
     def render(self, mode='human'):
         self.env.render(mode)

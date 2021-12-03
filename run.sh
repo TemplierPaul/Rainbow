@@ -1,5 +1,6 @@
 python -m main.py --target-update 2000 \
-               --T-max 100000 \
+               --T-max 10000 \
+               --evaluation-interval 100 \
                --learn-start 1600 \
                --memory-capacity 100000 \
                --replay-frequency 1 \
@@ -7,7 +8,7 @@ python -m main.py --target-update 2000 \
                --architecture data-efficient \
                --hidden-size 256 \
                --learning-rate 0.0001 \
-               --evaluation-interval 10000 \
                --multi-step 1 \
                --history-length 1 \
-               --game bigfish
+               --env bigfish \
+               --wandb test_rainbow \
