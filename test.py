@@ -48,7 +48,7 @@ def test(args, T, dqn, val_mem, metrics, results_dir, evaluate=False):
   avg_reward, avg_Q = sum(T_rewards) / len(T_rewards), sum(T_Qs) / len(T_Qs)
 
   # Log metrics to wandb
-  wandb.log({'avg_reward': avg_reward, 'avg_Q': avg_Q}, step=T)
+  wandb.log({'fitness': avg_reward, 'avg_Q': avg_Q, "total_frames":T}, step=T)
 
   if not evaluate:
     # Save model parameters if improved

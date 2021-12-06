@@ -1,11 +1,11 @@
 python -m main.py --target-update 2000 \
-               --T-max 200000 \
+               --T-max 200000000 \
                --evaluation-interval 1000 \
-               --learn-start 1600 \
+               --learn-start 5000 \
                --memory-capacity 1000000 \
                --replay-frequency 1 \
                --multi-step 20 \
-               --architecture data-efficient \
+               --architecture impala \
                --hidden-size 256 \
                --learning-rate 0.0001 \
                --multi-step 1 \
